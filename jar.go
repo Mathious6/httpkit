@@ -14,6 +14,7 @@ import (
 
 const CookieExpired = -1
 
+// CookieJarOption is a function that modifies the configuration of a cookieJar.
 type CookieJarOption func(config *cookieJarConfig)
 
 type cookieJarConfig struct {
@@ -23,7 +24,7 @@ type cookieJarConfig struct {
 	allowEmpty   bool
 }
 
-// WithSkipExisting is used to skip existing cookies in the jar (default: false).
+// WithSkipExisting returns a CookieJarOption that skips existing cookies in the jar (default: false).
 // This is useful when you want to add new cookies without overwriting existing ones.
 func WithSkipExisting() CookieJarOption {
 	return func(config *cookieJarConfig) {
@@ -31,7 +32,7 @@ func WithSkipExisting() CookieJarOption {
 	}
 }
 
-// WithAllowEmpty is used to allow empty cookies in the jar (default: false).
+// WithAllowEmpty returns a CookieJarOption that allows empty cookies in the jar (default: false).
 // Note: this is not recommended as empty cookies are usually not valid.
 func WithAllowEmpty() CookieJarOption {
 	return func(config *cookieJarConfig) {
@@ -39,19 +40,21 @@ func WithAllowEmpty() CookieJarOption {
 	}
 }
 
+// WithDebugLogger returns a CookieJarOption that enables debug logging for the cookie jar.
 func WithDebugLogger() CookieJarOption {
 	return func(config *cookieJarConfig) {
 		config.debug = true
 	}
 }
 
+// WithLogger returns a CookieJarOption that sets a custom logger for the cookie jar.
 func WithLogger(logger Logger) CookieJarOption {
 	return func(config *cookieJarConfig) {
 		config.logger = logger
 	}
 }
 
-// CookieJar is the interface that wraps the basic CookieJar methods.
+// CookieJar is the interface that wraps the basic CookieJar methods, including additional helpers.
 type CookieJar interface {
 	http.CookieJar
 	CookiesMap() map[string][]*http.Cookie
@@ -131,7 +134,7 @@ func (jar *cookieJar) SetCookies(u *url.URL, cookies []*http.Cookie) {
 	jar.cookies[hostKey] = cookies
 }
 
-// Cookies returns the cookies for the given url.
+// Cookies returns the cookies for the given url, filtering out expired cookies.
 func (jar *cookieJar) Cookies(u *url.URL) []*http.Cookie {
 	jar.RLock()
 	defer jar.RUnlock()
@@ -201,7 +204,7 @@ func (jar *cookieJar) unique(cookies []*http.Cookie) []*http.Cookie {
 	return filteredCookies
 }
 
-// nonEmpty filters out empty cookies if allowEmptyCookies is false.
+// nonEmpty filters out empty cookies if allowEmpty is false.
 func (jar *cookieJar) nonEmpty(cookies []*http.Cookie) []*http.Cookie {
 	if jar.config.allowEmpty {
 		return cookies
@@ -224,10 +227,10 @@ func (jar *cookieJar) nonEmpty(cookies []*http.Cookie) []*http.Cookie {
 func (jar *cookieJar) notExpired(cookies []*http.Cookie) []*http.Cookie {
 	var filteredCookies []*http.Cookie
 
-	for _, c := range cookies {
+	for _, cookie := range cookies {
 		// we misuse the max age here for "deletion" reasons. To be 100% correct a MaxAge equals 0 should also be deleted but we do not do it for now.
-		if c.MaxAge <= CookieExpired {
-			jar.config.logger.Debug("cookie %s in jar max age set to 0 or below. will be excluded from request", c.Name)
+		if cookie.MaxAge <= CookieExpired {
+			jar.config.logger.Debug("cookie %s in jar max age set to 0 or below. will be excluded from request", cookie.Name)
 			continue
 		}
 
@@ -237,13 +240,13 @@ func (jar *cookieJar) notExpired(cookies []*http.Cookie) []*http.Cookie {
 			continue
 		}*/
 
-		filteredCookies = append(filteredCookies, c)
+		filteredCookies = append(filteredCookies, cookie)
 	}
 
 	return filteredCookies
 }
 
-// findCookieByName returns the cookie with the given name if it exists and is not expired.
+// findCookieByName returns the cookie with the given name if it exists in the slice.
 func findCookieByName(cookies []*http.Cookie, name string) *http.Cookie {
 	for _, c := range cookies {
 		if c.Name == name {
