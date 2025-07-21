@@ -6,57 +6,75 @@ import (
 	"strings"
 	"sync"
 
+	"maps"
+
 	http "github.com/bogdanfinn/fhttp"
 	"github.com/bogdanfinn/fhttp/cookiejar"
 )
 
+const CookieExpired = -1
+
+// CookieJarOption is a function that modifies the configuration of a cookieJar.
 type CookieJarOption func(config *cookieJarConfig)
 
 type cookieJarConfig struct {
-	logger            Logger
-	skipExisting      bool
-	debug             bool
-	allowEmptyCookies bool
+	logger       Logger
+	skipExisting bool
+	debug        bool
+	allowEmpty   bool
 }
 
+// WithSkipExisting returns a CookieJarOption that skips existing cookies in the jar (default: false).
+// This is useful when you want to add new cookies without overwriting existing ones.
 func WithSkipExisting() CookieJarOption {
 	return func(config *cookieJarConfig) {
 		config.skipExisting = true
 	}
 }
 
-func WithAllowEmptyCookies() CookieJarOption {
+// WithAllowEmpty returns a CookieJarOption that allows empty cookies in the jar (default: false).
+// Note: this is not recommended as empty cookies are usually not valid.
+func WithAllowEmpty() CookieJarOption {
 	return func(config *cookieJarConfig) {
-		config.allowEmptyCookies = true
+		config.allowEmpty = true
 	}
 }
 
+// WithDebugLogger returns a CookieJarOption that enables debug logging for the cookie jar.
 func WithDebugLogger() CookieJarOption {
 	return func(config *cookieJarConfig) {
 		config.debug = true
 	}
 }
 
+// WithLogger returns a CookieJarOption that sets a custom logger for the cookie jar.
 func WithLogger(logger Logger) CookieJarOption {
 	return func(config *cookieJarConfig) {
 		config.logger = logger
 	}
 }
 
+// CookieJar is the interface that wraps the basic CookieJar methods, including additional helpers.
 type CookieJar interface {
 	http.CookieJar
-	GetAllCookies() map[string][]*http.Cookie
+	CookiesMap() map[string][]*http.Cookie
+	Cookie(u *url.URL, name string) *http.Cookie
 }
 
 type cookieJar struct {
-	jar        *cookiejar.Jar
-	config     *cookieJarConfig
-	allCookies map[string][]*http.Cookie
+	jar     *cookiejar.Jar
+	config  *cookieJarConfig
+	cookies map[string][]*http.Cookie
 	sync.RWMutex
 }
 
+// NewCookieJar creates a new empty cookie jar with the given options.
+// Returns nil if the underlying cookiejar.Jar cannot be created.
 func NewCookieJar(options ...CookieJarOption) CookieJar {
-	realJar, _ := cookiejar.New(nil)
+	underlyingJar, err := cookiejar.New(nil)
+	if err != nil {
+		return nil
+	}
 
 	config := &cookieJarConfig{}
 
@@ -72,186 +90,165 @@ func NewCookieJar(options ...CookieJarOption) CookieJar {
 		config.logger = NewDebugLogger(config.logger)
 	}
 
-	c := &cookieJar{
-		jar:        realJar,
-		config:     config,
-		allCookies: make(map[string][]*http.Cookie),
+	return &cookieJar{
+		jar:     underlyingJar,
+		config:  config,
+		cookies: make(map[string][]*http.Cookie),
 	}
-
-	return c
 }
 
+// SetCookies sets the cookies for the given URL according to the rules defined in the config.
 func (jar *cookieJar) SetCookies(u *url.URL, cookies []*http.Cookie) {
 	jar.Lock()
 	defer jar.Unlock()
 
-	notEmptyCookies := jar.nonEmpty(cookies)
-	uniqueCookies := jar.unique(notEmptyCookies)
+	cookies = jar.nonEmpty(cookies)
+	cookies = jar.unique(cookies)
 
 	hostKey := jar.buildCookieHostKey(u)
+	existing := jar.cookies[hostKey]
 
-	if !jar.config.skipExisting {
-		existingCookies := jar.allCookies[hostKey]
-
-		var remainingExistingCookies []*http.Cookie
-
-		for _, existingCookie := range existingCookies {
-			shouldOverwrite := false
-			for _, cookie := range uniqueCookies {
-				shouldOverwrite = existingCookie.Name == cookie.Name
-
-				if shouldOverwrite {
-					break
-				}
-			}
-
-			if shouldOverwrite {
+	if jar.config.skipExisting {
+		var newCookies []*http.Cookie
+		for _, cookie := range cookies {
+			if findCookieByName(existing, cookie.Name) != nil {
+				jar.config.logger.Debug("[SetCookies] Cookie '%s' already exists in jar. Skipping.", cookie.Name)
 				continue
 			}
-
-			remainingExistingCookies = append(remainingExistingCookies, existingCookie)
+			jar.config.logger.Debug("[SetCookies] Adding new cookie '%s' to jar.", cookie.Name)
+			newCookies = append(newCookies, cookie)
 		}
-
-		newCookies := append(remainingExistingCookies, uniqueCookies...)
-
-		jar.jar.SetCookies(u, newCookies)
-		jar.allCookies[hostKey] = newCookies
-
-		return
-	}
-
-	var newNonExistentCookies []*http.Cookie
-
-	existingCookies := jar.allCookies[hostKey]
-
-	for _, cookie := range uniqueCookies {
-		alreadyInJar := false
-
-		for _, existingCookie := range existingCookies {
-			alreadyInJar = cookie.Name == existingCookie.Name
-
-			if alreadyInJar {
-				break
+		cookies = append(existing, newCookies...)
+	} else {
+		var existingCookies []*http.Cookie
+		for _, cookie := range existing {
+			if findCookieByName(cookies, cookie.Name) != nil {
+				jar.config.logger.Debug("[SetCookies] Cookie '%s' already exists in jar. Skipping.", cookie.Name)
+				continue
 			}
+			jar.config.logger.Debug("[SetCookies] Adding existing cookie '%s' to jar.", cookie.Name)
+			existingCookies = append(existingCookies, cookie)
 		}
-
-		if alreadyInJar {
-			jar.config.logger.Debug("cookie %s is already in jar, skipping", cookie.Name)
-			continue
-		}
-
-		jar.config.logger.Debug("cookie %s is not in jar yet, adding", cookie.Name)
-		newNonExistentCookies = append(newNonExistentCookies, cookie)
+		cookies = append(existingCookies, cookies...)
 	}
 
-	newCookies := append(existingCookies, newNonExistentCookies...)
-	jar.jar.SetCookies(u, newCookies)
-	jar.allCookies[hostKey] = newCookies
+	jar.jar.SetCookies(u, cookies)
+	jar.cookies[hostKey] = cookies
 }
 
+// Cookies returns the cookies for the given url, filtering out expired cookies.
 func (jar *cookieJar) Cookies(u *url.URL) []*http.Cookie {
 	jar.RLock()
 	defer jar.RUnlock()
 
 	hostKey := jar.buildCookieHostKey(u)
+	cookies := jar.cookies[hostKey]
 
-	allCookies := jar.allCookies[hostKey]
-
-	return jar.notExpired(allCookies)
+	return jar.notExpired(cookies)
 }
 
-func (jar *cookieJar) GetAllCookies() map[string][]*http.Cookie {
+// CookiesMap returns all cookies in the jar, grouped by host key.
+func (jar *cookieJar) CookiesMap() map[string][]*http.Cookie {
 	jar.RLock()
 	defer jar.RUnlock()
 
 	copied := make(map[string][]*http.Cookie)
-	for u, c := range jar.allCookies {
-		copied[u] = c
-	}
+	maps.Copy(copied, jar.cookies)
 
 	return copied
 }
 
-func (jar *cookieJar) buildCookieHostKey(u *url.URL) string {
-	host := u.Host
+// Cookie returns the cookie with the given name for the given url or nil if not found.
+func (jar *cookieJar) Cookie(u *url.URL, name string) *http.Cookie {
+	jar.RLock()
+	defer jar.RUnlock()
 
-	hostParts := strings.Split(host, ".")
+	hostKey := jar.buildCookieHostKey(u)
+	cookies := jar.cookies[hostKey]
 
-	switch len(hostParts) {
-	case 3:
-		return fmt.Sprintf("%s.%s", hostParts[len(hostParts)-2], hostParts[len(hostParts)-1])
-	case 2:
-		return fmt.Sprintf("%s.%s", hostParts[len(hostParts)-2], hostParts[len(hostParts)-1])
-	default:
-		return host
+	for _, cookie := range cookies {
+		if cookie.Name == name && cookie.MaxAge > CookieExpired {
+			return cookie
+		}
 	}
+
+	return nil
 }
 
+// buildCookieHostKey builds a host key for the cookie jar based on the URL.
+// It uses the last two parts of the host (e.g. "example.com" or "sub.example.com") as the key.
+func (jar *cookieJar) buildCookieHostKey(u *url.URL) string {
+	hostParts := strings.Split(u.Host, ".")
+
+	if len(hostParts) >= 2 {
+		return fmt.Sprintf("%s.%s", hostParts[len(hostParts)-2], hostParts[len(hostParts)-1])
+	}
+
+	return u.Host
+}
+
+// unique filters out duplicate cookies by name and keeps the last one.
 func (jar *cookieJar) unique(cookies []*http.Cookie) []*http.Cookie {
-	var filteredCookies []*http.Cookie
-	var uniqueCookies []string
+	seen := make(map[string]bool, len(cookies))
+	filteredCookies := make([]*http.Cookie, 0, len(cookies))
 
 	for i := len(cookies) - 1; i >= 0; i-- {
 		c := cookies[i]
-
-		if inSlice(uniqueCookies, c.Name) {
+		if seen[c.Name] {
 			continue
 		}
-
 		filteredCookies = append(filteredCookies, c)
-		uniqueCookies = append(uniqueCookies, c.Name)
+		seen[c.Name] = true
 	}
 
 	return filteredCookies
 }
 
+// nonEmpty filters out empty cookies if allowEmpty is false.
 func (jar *cookieJar) nonEmpty(cookies []*http.Cookie) []*http.Cookie {
-	if jar.config.allowEmptyCookies {
+	if jar.config.allowEmpty {
 		return cookies
 	}
 
-	var filteredCookies []*http.Cookie
-
-	for _, c := range cookies {
-		if c.Value == "" {
-			jar.config.logger.Debug("cookie %s is empty and will be filtered out", c.Name)
+	filteredCookies := cookies[:0]
+	for _, cookie := range cookies {
+		if cookie.Value == "" {
+			jar.config.logger.Debug("[nonEmpty] Cookie '%s' is empty and will be filtered out.", cookie.Name)
 			continue
 		}
-
-		filteredCookies = append(filteredCookies, c)
+		filteredCookies = append(filteredCookies, cookie)
 	}
 
 	return filteredCookies
 }
 
+// notExpired filters out expired cookies.
 func (jar *cookieJar) notExpired(cookies []*http.Cookie) []*http.Cookie {
-	var filteredCookies []*http.Cookie
-
-	for _, c := range cookies {
-		// we misuse the max age here for "deletion" reasons. To be 100% correct a MaxAge equals 0 should also be deleted but we do not do it for now.
-		if c.MaxAge < 0 {
-			jar.config.logger.Debug("cookie %s in jar max age set to 0 or below. will be excluded from request", c.Name)
+	filteredCookies := cookies[:0]
+	for _, cookie := range cookies {
+		if cookie.MaxAge <= CookieExpired {
+			jar.config.logger.Debug("[notExpired] Cookie '%s' in jar has max age <= 0. Will be excluded from request.", cookie.Name)
 			continue
 		}
 
-		// TODO: this is currently commented out as the cookie parser does not parse the expire correctly out of the Set-Cookie header.
-		/*if c.Expires.Before(now) {
-			jar.config.logger.Debug("cookie %s in jar expired. will be excluded from request", c.Name)
-			continue
-		}*/
+		// TODO: The cookie parser does not parse the Expires field correctly from the Set-Cookie header.
+		// Once fixed, consider also filtering cookies by expiration date here.
+		// if cookie.Expires.Before(now) {
+		// 	jar.config.logger.Debug("[notExpired] Cookie '%s' in jar expired. Will be excluded from request.", cookie.Name)
+		// 	continue
+		// }
 
-		filteredCookies = append(filteredCookies, c)
+		filteredCookies = append(filteredCookies, cookie)
 	}
-
 	return filteredCookies
 }
 
-func inSlice(slice []string, elem string) bool {
-	for _, e := range slice {
-		if e == elem {
-			return true
+// findCookieByName returns the cookie with the given name if it exists in the slice.
+func findCookieByName(cookies []*http.Cookie, name string) *http.Cookie {
+	for _, c := range cookies {
+		if c.Name == name {
+			return c
 		}
 	}
-
-	return false
+	return nil
 }

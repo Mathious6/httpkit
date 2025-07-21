@@ -1,0 +1,41 @@
+{
+    "name": "devcontainer",
+    "image": "mcr.microsoft.com/devcontainers/go:1.24",
+    "remoteUser": "vscode",
+    "initializeCommand": "",
+    "postCreateCommand": "go mod download",
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "terminal.integrated.defaultProfile.linux": "zsh",
+                "editor.formatOnSave": true,
+                "editor.insertSpaces": true,
+                "files.autoSave": "onFocusChange",
+                "files.insertFinalNewline": true,
+                "files.trimFinalNewlines": true,
+                "go.toolsManagement.autoUpdate": true,
+                "go.lintTool": "golangci-lint",
+                "go.formatTool": "goimports",
+                "explorer.fileNesting.enabled": true,
+                "explorer.fileNesting.patterns": {
+                    "go.mod": "go.sum",
+                    "*.go": "${basename}_test.go"
+                }
+            },
+            "extensions": [
+                "golang.go",
+                "ms-azuretools.vscode-docker"
+            ]
+        }
+    },
+    "mounts": [
+        "source=go-modules,target=/go,type=volume"
+    ],
+    "features": {
+        "ghcr.io/devcontainers-extra/features/zsh-plugins:0": {
+            "plugins": "git golang zsh-autosuggestions zsh-syntax-highlighting zsh-you-should-use",
+            "omzPlugins": "https://github.com/zsh-users/zsh-autosuggestions https://github.com/zsh-users/zsh-syntax-highlighting https://github.com/MichaelAquilina/zsh-you-should-use",
+            "username": "vscode"
+        }
+    }
+}
