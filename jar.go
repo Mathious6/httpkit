@@ -69,8 +69,12 @@ type cookieJar struct {
 }
 
 // NewCookieJar creates a new empty cookie jar with the given options.
+// Returns nil if the underlying cookiejar.Jar cannot be created.
 func NewCookieJar(options ...CookieJarOption) CookieJar {
-	realJar, _ := cookiejar.New(nil)
+	underlyingJar, err := cookiejar.New(nil)
+	if err != nil {
+		return nil
+	}
 
 	config := &cookieJarConfig{}
 
@@ -87,7 +91,7 @@ func NewCookieJar(options ...CookieJarOption) CookieJar {
 	}
 
 	return &cookieJar{
-		jar:     realJar,
+		jar:     underlyingJar,
 		config:  config,
 		cookies: make(map[string][]*http.Cookie),
 	}
@@ -108,11 +112,10 @@ func (jar *cookieJar) SetCookies(u *url.URL, cookies []*http.Cookie) {
 		var newCookies []*http.Cookie
 		for _, cookie := range cookies {
 			if findCookieByName(existing, cookie.Name) != nil {
-				jar.config.logger.Debug("cookie %s already exists in jar. skipping", cookie.Name)
+				jar.config.logger.Debug("[SetCookies] Cookie '%s' already exists in jar. Skipping.", cookie.Name)
 				continue
 			}
-
-			jar.config.logger.Debug("adding cookie %s to jar", cookie.Name)
+			jar.config.logger.Debug("[SetCookies] Adding new cookie '%s' to jar.", cookie.Name)
 			newCookies = append(newCookies, cookie)
 		}
 		cookies = append(existing, newCookies...)
@@ -120,11 +123,10 @@ func (jar *cookieJar) SetCookies(u *url.URL, cookies []*http.Cookie) {
 		var existingCookies []*http.Cookie
 		for _, cookie := range existing {
 			if findCookieByName(cookies, cookie.Name) != nil {
-				jar.config.logger.Debug("cookie %s already exists in jar. skipping", cookie.Name)
+				jar.config.logger.Debug("[SetCookies] Cookie '%s' already exists in jar. Skipping.", cookie.Name)
 				continue
 			}
-
-			jar.config.logger.Debug("adding cookie %s to jar", cookie.Name)
+			jar.config.logger.Debug("[SetCookies] Adding existing cookie '%s' to jar.", cookie.Name)
 			existingCookies = append(existingCookies, cookie)
 		}
 		cookies = append(existingCookies, cookies...)
@@ -187,16 +189,14 @@ func (jar *cookieJar) buildCookieHostKey(u *url.URL) string {
 
 // unique filters out duplicate cookies by name and keeps the last one.
 func (jar *cookieJar) unique(cookies []*http.Cookie) []*http.Cookie {
-	seen := make(map[string]bool)
-	var filteredCookies []*http.Cookie
+	seen := make(map[string]bool, len(cookies))
+	filteredCookies := make([]*http.Cookie, 0, len(cookies))
 
 	for i := len(cookies) - 1; i >= 0; i-- {
 		c := cookies[i]
-
 		if seen[c.Name] {
 			continue
 		}
-
 		filteredCookies = append(filteredCookies, c)
 		seen[c.Name] = true
 	}
@@ -210,13 +210,12 @@ func (jar *cookieJar) nonEmpty(cookies []*http.Cookie) []*http.Cookie {
 		return cookies
 	}
 
-	var filteredCookies []*http.Cookie
+	filteredCookies := cookies[:0]
 	for _, cookie := range cookies {
 		if cookie.Value == "" {
-			jar.config.logger.Debug("cookie %s is empty and will be filtered out", cookie.Name)
+			jar.config.logger.Debug("[nonEmpty] Cookie '%s' is empty and will be filtered out.", cookie.Name)
 			continue
 		}
-
 		filteredCookies = append(filteredCookies, cookie)
 	}
 
@@ -225,24 +224,22 @@ func (jar *cookieJar) nonEmpty(cookies []*http.Cookie) []*http.Cookie {
 
 // notExpired filters out expired cookies.
 func (jar *cookieJar) notExpired(cookies []*http.Cookie) []*http.Cookie {
-	var filteredCookies []*http.Cookie
-
+	filteredCookies := cookies[:0]
 	for _, cookie := range cookies {
-		// we misuse the max age here for "deletion" reasons. To be 100% correct a MaxAge equals 0 should also be deleted but we do not do it for now.
 		if cookie.MaxAge <= CookieExpired {
-			jar.config.logger.Debug("cookie %s in jar max age set to 0 or below. will be excluded from request", cookie.Name)
+			jar.config.logger.Debug("[notExpired] Cookie '%s' in jar has max age <= 0. Will be excluded from request.", cookie.Name)
 			continue
 		}
 
-		// TODO: this is currently commented out as the cookie parser does not parse the expire correctly out of the Set-Cookie header.
-		/*if c.Expires.Before(now) {
-			jar.config.logger.Debug("cookie %s in jar expired. will be excluded from request", c.Name)
-			continue
-		}*/
+		// TODO: The cookie parser does not parse the Expires field correctly from the Set-Cookie header.
+		// Once fixed, consider also filtering cookies by expiration date here.
+		// if cookie.Expires.Before(now) {
+		// 	jar.config.logger.Debug("[notExpired] Cookie '%s' in jar expired. Will be excluded from request.", cookie.Name)
+		// 	continue
+		// }
 
 		filteredCookies = append(filteredCookies, cookie)
 	}
-
 	return filteredCookies
 }
 
