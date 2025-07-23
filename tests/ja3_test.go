@@ -3,11 +3,10 @@ package tests
 import (
 	"testing"
 
+	"github.com/Mathious6/httpkit"
 	"github.com/Mathious6/httpkit/profiles"
 	utls "github.com/bogdanfinn/utls"
 	"github.com/stretchr/testify/assert"
-
-	tls_client "github.com/bogdanfinn/tls-client"
 )
 
 func TestJA3(t *testing.T) {
@@ -35,7 +34,7 @@ func ja3_chrome_120(t *testing.T) {
 	alpnProtocols := []string{"h2", "http/1.1"}
 	alpsProtocols := []string{"h2"}
 
-	ccs := []tls_client.CandidateCipherSuites{
+	ccs := []httpkit.CandidateCipherSuites{
 		{
 			KdfId:  "HKDF_SHA256",
 			AeadId: "AEAD_AES_128_GCM",
@@ -48,7 +47,7 @@ func ja3_chrome_120(t *testing.T) {
 	cp := []uint16{128, 160, 192, 224}
 	ca := []string{"zlib"}
 
-	specFunc, err := tls_client.GetSpecFactoryFromJa3String(input, ssa, dca, sv, sc, alpnProtocols, alpsProtocols, ccs, cp, ca, 0)
+	specFunc, err := httpkit.GetSpecFactoryFromJa3String(input, ssa, dca, sv, sc, alpnProtocols, alpsProtocols, ccs, cp, ca, 0)
 
 	if err != nil {
 		t.Fatal(err)
@@ -74,7 +73,7 @@ func ja3_chrome_112_with_psk(t *testing.T) {
 	alpsProtocols := []string{"h2"}
 	ca := []string{"brotli"}
 
-	specFunc, err := tls_client.GetSpecFactoryFromJa3String(input, ssa, dca, sv, sc, alpnProtocols, alpsProtocols, nil, nil, ca, 0)
+	specFunc, err := httpkit.GetSpecFactoryFromJa3String(input, ssa, dca, sv, sc, alpnProtocols, alpsProtocols, nil, nil, ca, 0)
 
 	if err != nil {
 		t.Fatal(err)
@@ -100,7 +99,7 @@ func ja3_chrome_105(t *testing.T) {
 	alpsProtocols := []string{"h2"}
 	ca := []string{"zlib"}
 
-	specFunc, err := tls_client.GetSpecFactoryFromJa3String(input, ssa, dca, sv, sc, alpnProtocols, alpsProtocols, nil, nil, ca, 0)
+	specFunc, err := httpkit.GetSpecFactoryFromJa3String(input, ssa, dca, sv, sc, alpnProtocols, alpsProtocols, nil, nil, ca, 0)
 
 	if err != nil {
 		t.Fatal(err)
@@ -126,7 +125,7 @@ func ja3_chrome_107(t *testing.T) {
 	alpsProtocols := []string{"h2"}
 	ca := []string{"zlib"}
 
-	specFunc, err := tls_client.GetSpecFactoryFromJa3String(input, ssa, dca, sv, sc, alpnProtocols, alpsProtocols, nil, nil, ca, 0)
+	specFunc, err := httpkit.GetSpecFactoryFromJa3String(input, ssa, dca, sv, sc, alpnProtocols, alpsProtocols, nil, nil, ca, 0)
 
 	if err != nil {
 		t.Fatal(err)
@@ -152,7 +151,7 @@ func ja3_firefox_105(t *testing.T) {
 	alpsProtocols := []string{"h2"}
 	ca := []string{"zlib"}
 
-	specFunc, err := tls_client.GetSpecFactoryFromJa3String(input, ssa, dca, sv, sc, alpnProtocols, alpsProtocols, nil, nil, ca, 0)
+	specFunc, err := httpkit.GetSpecFactoryFromJa3String(input, ssa, dca, sv, sc, alpnProtocols, alpsProtocols, nil, nil, ca, 0)
 
 	if err != nil {
 		t.Fatal(err)
@@ -178,7 +177,7 @@ func ja3_opera_91(t *testing.T) {
 	alpsProtocols := []string{"h2"}
 	ca := []string{"zlib"}
 
-	specFunc, err := tls_client.GetSpecFactoryFromJa3String(input, ssa, dca, sv, sc, alpnProtocols, alpsProtocols, nil, nil, ca, 0)
+	specFunc, err := httpkit.GetSpecFactoryFromJa3String(input, ssa, dca, sv, sc, alpnProtocols, alpsProtocols, nil, nil, ca, 0)
 
 	if err != nil {
 		t.Fatal(err)

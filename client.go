@@ -10,11 +10,11 @@ import (
 	"sync"
 	"time"
 
+	"github.com/Mathious6/httpkit/bandwidth"
 	"github.com/Mathious6/httpkit/profiles"
 	"github.com/Mathious6/platekit"
 	http "github.com/bogdanfinn/fhttp"
 	"github.com/bogdanfinn/fhttp/httputil"
-	"github.com/bogdanfinn/tls-client/bandwidth"
 	"golang.org/x/net/proxy"
 )
 
