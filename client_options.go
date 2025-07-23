@@ -1,4 +1,4 @@
-package tls_client
+package httpkit
 
 import (
 	"crypto/x509"
@@ -7,8 +7,8 @@ import (
 	"net"
 	"time"
 
+	"github.com/Mathious6/httpkit/profiles"
 	http "github.com/bogdanfinn/fhttp"
-	"github.com/bogdanfinn/tls-client/profiles"
 	"golang.org/x/net/proxy"
 )
 

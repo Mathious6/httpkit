@@ -6,10 +6,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/bogdanfinn/tls-client/profiles"
-
+	"github.com/Mathious6/httpkit"
+	"github.com/Mathious6/httpkit/profiles"
 	http "github.com/bogdanfinn/fhttp"
-	tls_client "github.com/bogdanfinn/tls-client"
 	tls "github.com/bogdanfinn/utls"
 )
 
@@ -135,12 +134,12 @@ var defaultOkHttp4Header = http.Header{
 }
 
 func chrome116WithPsk(t *testing.T) {
-	options := []tls_client.HttpClientOption{
-		tls_client.WithClientProfile(profiles.Chrome_116_PSK),
-		tls_client.WithTimeoutSeconds(120),
+	options := []httpkit.HttpClientOption{
+		httpkit.WithClientProfile(profiles.Chrome_116_PSK),
+		httpkit.WithTimeoutSeconds(120),
 	}
 
-	client, err := tls_client.NewHttpClient(nil, options...)
+	client, err := httpkit.NewHttpClient(nil, options...)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -175,11 +174,11 @@ func chrome116WithPsk(t *testing.T) {
 }
 
 func chrome112(t *testing.T) {
-	options := []tls_client.HttpClientOption{
-		tls_client.WithClientProfile(profiles.Chrome_112),
+	options := []httpkit.HttpClientOption{
+		httpkit.WithClientProfile(profiles.Chrome_112),
 	}
 
-	client, err := tls_client.NewHttpClient(nil, options...)
+	client, err := httpkit.NewHttpClient(nil, options...)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -200,11 +199,11 @@ func chrome112(t *testing.T) {
 }
 
 func chrome111(t *testing.T) {
-	options := []tls_client.HttpClientOption{
-		tls_client.WithClientProfile(profiles.Chrome_111),
+	options := []httpkit.HttpClientOption{
+		httpkit.WithClientProfile(profiles.Chrome_111),
 	}
 
-	client, err := tls_client.NewHttpClient(nil, options...)
+	client, err := httpkit.NewHttpClient(nil, options...)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -225,11 +224,11 @@ func chrome111(t *testing.T) {
 }
 
 func chrome110(t *testing.T) {
-	options := []tls_client.HttpClientOption{
-		tls_client.WithClientProfile(profiles.Chrome_110),
+	options := []httpkit.HttpClientOption{
+		httpkit.WithClientProfile(profiles.Chrome_110),
 	}
 
-	client, err := tls_client.NewHttpClient(nil, options...)
+	client, err := httpkit.NewHttpClient(nil, options...)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -250,11 +249,11 @@ func chrome110(t *testing.T) {
 }
 
 func chrome109(t *testing.T) {
-	options := []tls_client.HttpClientOption{
-		tls_client.WithClientProfile(profiles.Chrome_109),
+	options := []httpkit.HttpClientOption{
+		httpkit.WithClientProfile(profiles.Chrome_109),
 	}
 
-	client, err := tls_client.NewHttpClient(nil, options...)
+	client, err := httpkit.NewHttpClient(nil, options...)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -275,11 +274,11 @@ func chrome109(t *testing.T) {
 }
 
 func chrome108(t *testing.T) {
-	options := []tls_client.HttpClientOption{
-		tls_client.WithClientProfile(profiles.Chrome_108),
+	options := []httpkit.HttpClientOption{
+		httpkit.WithClientProfile(profiles.Chrome_108),
 	}
 
-	client, err := tls_client.NewHttpClient(nil, options...)
+	client, err := httpkit.NewHttpClient(nil, options...)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -300,11 +299,11 @@ func chrome108(t *testing.T) {
 }
 
 func chrome107(t *testing.T) {
-	options := []tls_client.HttpClientOption{
-		tls_client.WithClientProfile(profiles.Chrome_107),
+	options := []httpkit.HttpClientOption{
+		httpkit.WithClientProfile(profiles.Chrome_107),
 	}
 
-	client, err := tls_client.NewHttpClient(nil, options...)
+	client, err := httpkit.NewHttpClient(nil, options...)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -325,11 +324,11 @@ func chrome107(t *testing.T) {
 }
 
 func chrome105(t *testing.T) {
-	options := []tls_client.HttpClientOption{
-		tls_client.WithClientProfile(profiles.Chrome_105),
+	options := []httpkit.HttpClientOption{
+		httpkit.WithClientProfile(profiles.Chrome_105),
 	}
 
-	client, err := tls_client.NewHttpClient(nil, options...)
+	client, err := httpkit.NewHttpClient(nil, options...)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -350,11 +349,11 @@ func chrome105(t *testing.T) {
 }
 
 func chrome104(t *testing.T) {
-	options := []tls_client.HttpClientOption{
-		tls_client.WithClientProfile(profiles.Chrome_104),
+	options := []httpkit.HttpClientOption{
+		httpkit.WithClientProfile(profiles.Chrome_104),
 	}
 
-	client, err := tls_client.NewHttpClient(nil, options...)
+	client, err := httpkit.NewHttpClient(nil, options...)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -375,11 +374,11 @@ func chrome104(t *testing.T) {
 }
 
 func chrome103(t *testing.T) {
-	options := []tls_client.HttpClientOption{
-		tls_client.WithClientProfile(profiles.Chrome_103),
+	options := []httpkit.HttpClientOption{
+		httpkit.WithClientProfile(profiles.Chrome_103),
 	}
 
-	client, err := tls_client.NewHttpClient(nil, options...)
+	client, err := httpkit.NewHttpClient(nil, options...)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -400,11 +399,11 @@ func chrome103(t *testing.T) {
 }
 
 func safari_16_0(t *testing.T) {
-	options := []tls_client.HttpClientOption{
-		tls_client.WithClientProfile(profiles.Safari_16_0),
+	options := []httpkit.HttpClientOption{
+		httpkit.WithClientProfile(profiles.Safari_16_0),
 	}
 
-	client, err := tls_client.NewHttpClient(nil, options...)
+	client, err := httpkit.NewHttpClient(nil, options...)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -425,11 +424,11 @@ func safari_16_0(t *testing.T) {
 }
 
 func safari_iOS_16_0(t *testing.T) {
-	options := []tls_client.HttpClientOption{
-		tls_client.WithClientProfile(profiles.Safari_IOS_16_0),
+	options := []httpkit.HttpClientOption{
+		httpkit.WithClientProfile(profiles.Safari_IOS_16_0),
 	}
 
-	client, err := tls_client.NewHttpClient(nil, options...)
+	client, err := httpkit.NewHttpClient(nil, options...)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -450,11 +449,11 @@ func safari_iOS_16_0(t *testing.T) {
 }
 
 func safari_iOS_18_0(t *testing.T) {
-	options := []tls_client.HttpClientOption{
-		tls_client.WithClientProfile(profiles.Safari_IOS_18_0),
+	options := []httpkit.HttpClientOption{
+		httpkit.WithClientProfile(profiles.Safari_IOS_18_0),
 	}
 
-	client, err := tls_client.NewHttpClient(nil, options...)
+	client, err := httpkit.NewHttpClient(nil, options...)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -475,11 +474,11 @@ func safari_iOS_18_0(t *testing.T) {
 }
 
 func firefox_105(t *testing.T) {
-	options := []tls_client.HttpClientOption{
-		tls_client.WithClientProfile(profiles.Firefox_105),
+	options := []httpkit.HttpClientOption{
+		httpkit.WithClientProfile(profiles.Firefox_105),
 	}
 
-	client, err := tls_client.NewHttpClient(nil, options...)
+	client, err := httpkit.NewHttpClient(nil, options...)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -500,11 +499,11 @@ func firefox_105(t *testing.T) {
 }
 
 func firefox_106(t *testing.T) {
-	options := []tls_client.HttpClientOption{
-		tls_client.WithClientProfile(profiles.Firefox_106),
+	options := []httpkit.HttpClientOption{
+		httpkit.WithClientProfile(profiles.Firefox_106),
 	}
 
-	client, err := tls_client.NewHttpClient(nil, options...)
+	client, err := httpkit.NewHttpClient(nil, options...)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -525,11 +524,11 @@ func firefox_106(t *testing.T) {
 }
 
 func firefox_108(t *testing.T) {
-	options := []tls_client.HttpClientOption{
-		tls_client.WithClientProfile(profiles.Firefox_108),
+	options := []httpkit.HttpClientOption{
+		httpkit.WithClientProfile(profiles.Firefox_108),
 	}
 
-	client, err := tls_client.NewHttpClient(nil, options...)
+	client, err := httpkit.NewHttpClient(nil, options...)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -550,11 +549,11 @@ func firefox_108(t *testing.T) {
 }
 
 func chrome_124(t *testing.T) {
-	options := []tls_client.HttpClientOption{
-		tls_client.WithClientProfile(profiles.Chrome_124),
+	options := []httpkit.HttpClientOption{
+		httpkit.WithClientProfile(profiles.Chrome_124),
 	}
 
-	client, err := tls_client.NewHttpClient(nil, options...)
+	client, err := httpkit.NewHttpClient(nil, options...)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -575,11 +574,11 @@ func chrome_124(t *testing.T) {
 }
 
 func chrome_133(t *testing.T) {
-	options := []tls_client.HttpClientOption{
-		tls_client.WithClientProfile(profiles.Chrome_133),
+	options := []httpkit.HttpClientOption{
+		httpkit.WithClientProfile(profiles.Chrome_133),
 	}
 
-	client, err := tls_client.NewHttpClient(nil, options...)
+	client, err := httpkit.NewHttpClient(nil, options...)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -600,11 +599,11 @@ func chrome_133(t *testing.T) {
 }
 
 func chrome_131(t *testing.T) {
-	options := []tls_client.HttpClientOption{
-		tls_client.WithClientProfile(profiles.Chrome_131),
+	options := []httpkit.HttpClientOption{
+		httpkit.WithClientProfile(profiles.Chrome_131),
 	}
 
-	client, err := tls_client.NewHttpClient(nil, options...)
+	client, err := httpkit.NewHttpClient(nil, options...)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -625,11 +624,11 @@ func chrome_131(t *testing.T) {
 }
 
 func chrome_120(t *testing.T) {
-	options := []tls_client.HttpClientOption{
-		tls_client.WithClientProfile(profiles.Chrome_120),
+	options := []httpkit.HttpClientOption{
+		httpkit.WithClientProfile(profiles.Chrome_120),
 	}
 
-	client, err := tls_client.NewHttpClient(nil, options...)
+	client, err := httpkit.NewHttpClient(nil, options...)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -650,11 +649,11 @@ func chrome_120(t *testing.T) {
 }
 
 func chrome_117(t *testing.T) {
-	options := []tls_client.HttpClientOption{
-		tls_client.WithClientProfile(profiles.Chrome_117),
+	options := []httpkit.HttpClientOption{
+		httpkit.WithClientProfile(profiles.Chrome_117),
 	}
 
-	client, err := tls_client.NewHttpClient(nil, options...)
+	client, err := httpkit.NewHttpClient(nil, options...)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -675,11 +674,11 @@ func chrome_117(t *testing.T) {
 }
 
 func firefox_117(t *testing.T) {
-	options := []tls_client.HttpClientOption{
-		tls_client.WithClientProfile(profiles.Firefox_117),
+	options := []httpkit.HttpClientOption{
+		httpkit.WithClientProfile(profiles.Firefox_117),
 	}
 
-	client, err := tls_client.NewHttpClient(nil, options...)
+	client, err := httpkit.NewHttpClient(nil, options...)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -700,11 +699,11 @@ func firefox_117(t *testing.T) {
 }
 
 func firefox_110(t *testing.T) {
-	options := []tls_client.HttpClientOption{
-		tls_client.WithClientProfile(profiles.Firefox_110),
+	options := []httpkit.HttpClientOption{
+		httpkit.WithClientProfile(profiles.Firefox_110),
 	}
 
-	client, err := tls_client.NewHttpClient(nil, options...)
+	client, err := httpkit.NewHttpClient(nil, options...)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -725,11 +724,11 @@ func firefox_110(t *testing.T) {
 }
 
 func firefox_132(t *testing.T) {
-	options := []tls_client.HttpClientOption{
-		tls_client.WithClientProfile(profiles.Firefox_132),
+	options := []httpkit.HttpClientOption{
+		httpkit.WithClientProfile(profiles.Firefox_132),
 	}
 
-	client, err := tls_client.NewHttpClient(nil, options...)
+	client, err := httpkit.NewHttpClient(nil, options...)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -750,11 +749,11 @@ func firefox_132(t *testing.T) {
 }
 
 func opera_91(t *testing.T) {
-	options := []tls_client.HttpClientOption{
-		tls_client.WithClientProfile(profiles.Opera_91),
+	options := []httpkit.HttpClientOption{
+		httpkit.WithClientProfile(profiles.Opera_91),
 	}
 
-	client, err := tls_client.NewHttpClient(nil, options...)
+	client, err := httpkit.NewHttpClient(nil, options...)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -775,11 +774,11 @@ func opera_91(t *testing.T) {
 }
 
 func safariIos17(t *testing.T) {
-	options := []tls_client.HttpClientOption{
-		tls_client.WithClientProfile(profiles.Safari_IOS_17_0),
+	options := []httpkit.HttpClientOption{
+		httpkit.WithClientProfile(profiles.Safari_IOS_17_0),
 	}
 
-	client, err := tls_client.NewHttpClient(nil, options...)
+	client, err := httpkit.NewHttpClient(nil, options...)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -835,11 +834,11 @@ func compareResponse(t *testing.T, clientName string, expectedValues map[string]
 }
 
 func okhttp4Android13(t *testing.T) {
-	options := []tls_client.HttpClientOption{
-		tls_client.WithClientProfile(profiles.Okhttp4Android13),
+	options := []httpkit.HttpClientOption{
+		httpkit.WithClientProfile(profiles.Okhttp4Android13),
 	}
 
-	client, err := tls_client.NewHttpClient(nil, options...)
+	client, err := httpkit.NewHttpClient(nil, options...)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -860,11 +859,11 @@ func okhttp4Android13(t *testing.T) {
 }
 
 func okhttp4Android12(t *testing.T) {
-	options := []tls_client.HttpClientOption{
-		tls_client.WithClientProfile(profiles.Okhttp4Android12),
+	options := []httpkit.HttpClientOption{
+		httpkit.WithClientProfile(profiles.Okhttp4Android12),
 	}
 
-	client, err := tls_client.NewHttpClient(nil, options...)
+	client, err := httpkit.NewHttpClient(nil, options...)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -885,11 +884,11 @@ func okhttp4Android12(t *testing.T) {
 }
 
 func okhttp4Android11(t *testing.T) {
-	options := []tls_client.HttpClientOption{
-		tls_client.WithClientProfile(profiles.Okhttp4Android11),
+	options := []httpkit.HttpClientOption{
+		httpkit.WithClientProfile(profiles.Okhttp4Android11),
 	}
 
-	client, err := tls_client.NewHttpClient(nil, options...)
+	client, err := httpkit.NewHttpClient(nil, options...)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -910,11 +909,11 @@ func okhttp4Android11(t *testing.T) {
 }
 
 func okhttp4Android10(t *testing.T) {
-	options := []tls_client.HttpClientOption{
-		tls_client.WithClientProfile(profiles.Okhttp4Android10),
+	options := []httpkit.HttpClientOption{
+		httpkit.WithClientProfile(profiles.Okhttp4Android10),
 	}
 
-	client, err := tls_client.NewHttpClient(nil, options...)
+	client, err := httpkit.NewHttpClient(nil, options...)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -935,11 +934,11 @@ func okhttp4Android10(t *testing.T) {
 }
 
 func okhttp4Android9(t *testing.T) {
-	options := []tls_client.HttpClientOption{
-		tls_client.WithClientProfile(profiles.Okhttp4Android9),
+	options := []httpkit.HttpClientOption{
+		httpkit.WithClientProfile(profiles.Okhttp4Android9),
 	}
 
-	client, err := tls_client.NewHttpClient(nil, options...)
+	client, err := httpkit.NewHttpClient(nil, options...)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -960,11 +959,11 @@ func okhttp4Android9(t *testing.T) {
 }
 
 func okhttp4Android8(t *testing.T) {
-	options := []tls_client.HttpClientOption{
-		tls_client.WithClientProfile(profiles.Okhttp4Android8),
+	options := []httpkit.HttpClientOption{
+		httpkit.WithClientProfile(profiles.Okhttp4Android8),
 	}
 
-	client, err := tls_client.NewHttpClient(nil, options...)
+	client, err := httpkit.NewHttpClient(nil, options...)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -985,11 +984,11 @@ func okhttp4Android8(t *testing.T) {
 }
 
 func okhttp4Android7(t *testing.T) {
-	options := []tls_client.HttpClientOption{
-		tls_client.WithClientProfile(profiles.Okhttp4Android7),
+	options := []httpkit.HttpClientOption{
+		httpkit.WithClientProfile(profiles.Okhttp4Android7),
 	}
 
-	client, err := tls_client.NewHttpClient(nil, options...)
+	client, err := httpkit.NewHttpClient(nil, options...)
 	if err != nil {
 		t.Fatal(err)
 	}

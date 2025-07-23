@@ -5,19 +5,19 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/Mathious6/httpkit"
+	"github.com/Mathious6/httpkit/profiles"
 	http "github.com/bogdanfinn/fhttp"
-	tls_client "github.com/bogdanfinn/tls-client"
-	"github.com/bogdanfinn/tls-client/profiles"
 )
 
 func TestHTTP3(t *testing.T) {
-	options := []tls_client.HttpClientOption{
-		tls_client.WithClientProfile(profiles.Chrome_133),
-		tls_client.WithTimeoutSeconds(30),
-		tls_client.WithDebug(),
+	options := []httpkit.HttpClientOption{
+		httpkit.WithClientProfile(profiles.Chrome_133),
+		httpkit.WithTimeoutSeconds(30),
+		httpkit.WithDebug(),
 	}
 
-	client, err := tls_client.NewHttpClient(nil, options...)
+	client, err := httpkit.NewHttpClient(nil, options...)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -1,4 +1,4 @@
-package tls_client
+package httpkit
 
 import (
 	"net/url"
