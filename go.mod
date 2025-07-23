@@ -1,12 +1,12 @@
 module github.com/bogdanfinn/tls-client
 
-go 1.24.1
+go 1.24.3
 
 require (
 	github.com/Dharmey747/quic-go-utls v1.0.3-utls
+	github.com/Mathious6/platekit v1.0.0
 	github.com/bogdanfinn/fhttp v0.6.0
 	github.com/bogdanfinn/utls v1.7.3-barnius
-	github.com/google/uuid v1.6.0
 	github.com/stretchr/testify v1.9.0
 	github.com/tam7t/hpkp v0.0.0-20160821193359-2b70b4024ed5
 	golang.org/x/net v0.38.0

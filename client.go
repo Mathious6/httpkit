@@ -10,11 +10,11 @@ import (
 	"sync"
 	"time"
 
+	"github.com/Mathious6/platekit"
 	http "github.com/bogdanfinn/fhttp"
 	"github.com/bogdanfinn/fhttp/httputil"
 	"github.com/bogdanfinn/tls-client/bandwidth"
 	"github.com/bogdanfinn/tls-client/profiles"
-	"github.com/google/uuid"
 	"golang.org/x/net/proxy"
 )
 
@@ -106,9 +106,8 @@ func NewHttpClient(logger Logger, options ...HttpClientOption) (HttpClient, erro
 		logger = NewDebugLogger(logger)
 	}
 
-	// TODO: implement hashkit to generate flowId
 	if config.flowId == "" {
-		config.flowId = uuid.NewString()
+		config.flowId = platekit.Generate()
 	}
 
 	return &httpClient{
