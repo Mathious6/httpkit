@@ -24,16 +24,22 @@ var defaultRedirectFunc = func(req *http.Request, via []*http.Request) error {
 
 type HttpClient interface {
 	GetFlowId() string
+
 	GetCookies(u *url.URL) []*http.Cookie
 	SetCookies(u *url.URL, cookies []*http.Cookie)
 	SetCookieJar(jar http.CookieJar)
 	GetCookieJar() http.CookieJar
+
 	SetProxy(proxyUrl string) error
 	GetProxy() string
+
 	SetFollowRedirect(followRedirect bool)
 	GetFollowRedirect() bool
 	CloseIdleConnections()
+
 	Do(req *http.Request) (*http.Response, error)
+	DoWithProxy(req *http.Request, proxyUrl string) (*http.Response, error)
+
 	Get(url string) (resp *http.Response, err error)
 	Head(url string) (resp *http.Response, err error)
 	Post(url, contentType string, body io.Reader) (resp *http.Response, err error)
@@ -52,6 +58,7 @@ type httpClient struct {
 
 	http.Client
 	headerLck sync.Mutex
+	proxyLck  sync.Mutex
 }
 
 var DefaultTimeoutSeconds = 30
@@ -411,6 +418,19 @@ func (c *httpClient) Do(req *http.Request) (*http.Response, error) {
 	}
 
 	return resp, nil
+}
+
+func (c *httpClient) DoWithProxy(req *http.Request, proxyUrl string) (*http.Response, error) {
+	c.proxyLck.Lock()
+	defer c.proxyLck.Unlock()
+
+	currentProxy := c.GetProxy()
+	if err := c.SetProxy(proxyUrl); err != nil {
+		return nil, err
+	}
+	resp, doErr := c.Do(req)
+	_ = c.SetProxy(currentProxy)
+	return resp, doErr
 }
 
 func (c *httpClient) Get(url string) (resp *http.Response, err error) {
