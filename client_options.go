@@ -119,6 +119,15 @@ func WithTimeoutMilliseconds(timeout int) HttpClientOption {
 	}
 }
 
+// WithTimeoutSeconds configures an HTTP client to use the specified request timeout.
+//
+// timeout is the request timeout in seconds.
+func WithTimeoutSeconds(timeout int) HttpClientOption {
+	return func(config *httpClientConfig) {
+		config.timeout = time.Second * time.Duration(timeout)
+	}
+}
+
 // WithDialer configures an HTTP client to use the specified dialer. This allows the use of a custom DNS resolver
 func WithDialer(dialer net.Dialer) HttpClientOption {
 	return func(config *httpClientConfig) {
@@ -130,25 +139,6 @@ func WithDialer(dialer net.Dialer) HttpClientOption {
 func WithProxyDialerFactory(proxyDialerFactory ProxyDialerFactory) HttpClientOption {
 	return func(config *httpClientConfig) {
 		config.proxyDialerFactory = proxyDialerFactory
-	}
-}
-
-// WithTimeoutSeconds configures an HTTP client to use the specified request timeout.
-//
-// timeout is the request timeout in seconds.
-func WithTimeoutSeconds(timeout int) HttpClientOption {
-	return func(config *httpClientConfig) {
-		config.timeout = time.Second * time.Duration(timeout)
-	}
-}
-
-// WithTimeout configures an HTTP client to use the specified request timeout.
-//
-// timeout is the request timeout in seconds.
-// Deprecated: use either WithTimeoutSeconds or WithTimeoutMilliseconds
-func WithTimeout(timeout int) HttpClientOption {
-	return func(config *httpClientConfig) {
-		config.timeout = time.Second * time.Duration(timeout)
 	}
 }
 
