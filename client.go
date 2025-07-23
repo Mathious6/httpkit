@@ -14,6 +14,7 @@ import (
 	"github.com/bogdanfinn/fhttp/httputil"
 	"github.com/bogdanfinn/tls-client/bandwidth"
 	"github.com/bogdanfinn/tls-client/profiles"
+	"github.com/google/uuid"
 	"golang.org/x/net/proxy"
 )
 
@@ -22,6 +23,7 @@ var defaultRedirectFunc = func(req *http.Request, via []*http.Request) error {
 }
 
 type HttpClient interface {
+	GetFlowId() string
 	GetCookies(u *url.URL) []*http.Cookie
 	SetCookies(u *url.URL, cookies []*http.Cookie)
 	SetCookieJar(jar http.CookieJar)
@@ -94,16 +96,19 @@ func NewHttpClient(logger Logger, options ...HttpClientOption) (HttpClient, erro
 
 	config.clientProfile = clientProfile
 
-	if config.debug {
-		if logger == nil {
-			logger = NewLogger()
+	if logger == nil {
+		if config.debug {
+			logger = NewDebugLogger(NewLogger())
+		} else {
+			logger = NewNoopLogger()
 		}
-
+	} else if config.debug {
 		logger = NewDebugLogger(logger)
 	}
 
-	if logger == nil {
-		logger = NewNoopLogger()
+	// TODO: implement hashkit to generate flowId
+	if config.flowId == "" {
+		config.flowId = uuid.NewString()
 	}
 
 	return &httpClient{
@@ -272,6 +277,11 @@ func (c *httpClient) applyProxy() error {
 	c.Transport = transport
 
 	return nil
+}
+
+// GetFlowId returns the flow id of the client
+func (c *httpClient) GetFlowId() string {
+	return c.config.flowId
 }
 
 // GetCookies returns the cookies in the client's cookie jar for a given URL.

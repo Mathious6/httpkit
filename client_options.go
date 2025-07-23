@@ -53,6 +53,7 @@ type httpClientConfig struct {
 	dialer             net.Dialer
 	proxyDialerFactory ProxyDialerFactory
 
+	flowId                      string
 	proxyUrl                    string
 	serverNameOverwrite         string
 	clientProfile               profiles.ClientProfile
@@ -70,6 +71,13 @@ type httpClientConfig struct {
 	disableIPV4 bool
 
 	enabledBandwidthTracker bool
+}
+
+// WithFlowId configures a HTTP client to use the specified flow id.
+func WithFlowId(flowId string) HttpClientOption {
+	return func(config *httpClientConfig) {
+		config.flowId = flowId
+	}
 }
 
 // WithProxyUrl configures a HTTP client to use the specified proxy URL.
