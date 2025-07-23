@@ -1,9 +1,10 @@
-module github.com/bogdanfinn/tls-client
+module github.com/Mathious6/httpkit
 
-go 1.24.1
+go 1.24.3
 
 require (
 	github.com/Dharmey747/quic-go-utls v1.0.3-utls
+	github.com/Mathious6/platekit v1.0.0
 	github.com/bogdanfinn/fhttp v0.6.0
 	github.com/bogdanfinn/utls v1.7.3-barnius
 	github.com/stretchr/testify v1.9.0
@@ -27,7 +28,3 @@ require (
 	golang.org/x/tools v0.22.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
-
-// replace github.com/bogdanfinn/utls => ../utls
-
-// replace github.com/bogdanfinn/fhttp => ../fhttp

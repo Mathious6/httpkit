@@ -1,4 +1,4 @@
-package tls_client
+package httpkit
 
 import (
 	"crypto/x509"
@@ -7,8 +7,8 @@ import (
 	"net"
 	"time"
 
+	"github.com/Mathious6/httpkit/profiles"
 	http "github.com/bogdanfinn/fhttp"
-	"github.com/bogdanfinn/tls-client/profiles"
 	"golang.org/x/net/proxy"
 )
 
@@ -53,6 +53,7 @@ type httpClientConfig struct {
 	dialer             net.Dialer
 	proxyDialerFactory ProxyDialerFactory
 
+	flowId                      string
 	proxyUrl                    string
 	serverNameOverwrite         string
 	clientProfile               profiles.ClientProfile
@@ -70,6 +71,13 @@ type httpClientConfig struct {
 	disableIPV4 bool
 
 	enabledBandwidthTracker bool
+}
+
+// WithFlowId configures a HTTP client to use the specified flow id.
+func WithFlowId(flowId string) HttpClientOption {
+	return func(config *httpClientConfig) {
+		config.flowId = flowId
+	}
 }
 
 // WithProxyUrl configures a HTTP client to use the specified proxy URL.
@@ -119,6 +127,15 @@ func WithTimeoutMilliseconds(timeout int) HttpClientOption {
 	}
 }
 
+// WithTimeoutSeconds configures an HTTP client to use the specified request timeout.
+//
+// timeout is the request timeout in seconds.
+func WithTimeoutSeconds(timeout int) HttpClientOption {
+	return func(config *httpClientConfig) {
+		config.timeout = time.Second * time.Duration(timeout)
+	}
+}
+
 // WithDialer configures an HTTP client to use the specified dialer. This allows the use of a custom DNS resolver
 func WithDialer(dialer net.Dialer) HttpClientOption {
 	return func(config *httpClientConfig) {
@@ -130,25 +147,6 @@ func WithDialer(dialer net.Dialer) HttpClientOption {
 func WithProxyDialerFactory(proxyDialerFactory ProxyDialerFactory) HttpClientOption {
 	return func(config *httpClientConfig) {
 		config.proxyDialerFactory = proxyDialerFactory
-	}
-}
-
-// WithTimeoutSeconds configures an HTTP client to use the specified request timeout.
-//
-// timeout is the request timeout in seconds.
-func WithTimeoutSeconds(timeout int) HttpClientOption {
-	return func(config *httpClientConfig) {
-		config.timeout = time.Second * time.Duration(timeout)
-	}
-}
-
-// WithTimeout configures an HTTP client to use the specified request timeout.
-//
-// timeout is the request timeout in seconds.
-// Deprecated: use either WithTimeoutSeconds or WithTimeoutMilliseconds
-func WithTimeout(timeout int) HttpClientOption {
-	return func(config *httpClientConfig) {
-		config.timeout = time.Second * time.Duration(timeout)
 	}
 }
 

@@ -4,18 +4,18 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/Mathious6/httpkit"
+	"github.com/Mathious6/httpkit/profiles"
 	http "github.com/bogdanfinn/fhttp"
-	tls_client "github.com/bogdanfinn/tls-client"
-	"github.com/bogdanfinn/tls-client/profiles"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestWeb(t *testing.T) {
-	options := []tls_client.HttpClientOption{
-		tls_client.WithClientProfile(profiles.Firefox_110),
+	options := []httpkit.HttpClientOption{
+		httpkit.WithClientProfile(profiles.Firefox_110),
 	}
 
-	client, err := tls_client.NewHttpClient(nil, options...)
+	client, err := httpkit.NewHttpClient(nil, options...)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -52,21 +52,21 @@ import (
 	"io"
 	"log"
 
+	"github.com/Mathious6/httpkit"
 	http "github.com/bogdanfinn/fhttp"
-	tls_client "github.com/bogdanfinn/tls-client"
-	"github.com/bogdanfinn/tls-client/profiles"
+	"github.com/Mathious6/httpkit/profiles"
 )
 
 func main() {
-    jar := tls_client.NewCookieJar()
-	options := []tls_client.HttpClientOption{
-		tls_client.WithTimeoutSeconds(30),
-		tls_client.WithClientProfile(profiles.Chrome_120),
-		tls_client.WithNotFollowRedirects(),
-		tls_client.WithCookieJar(jar), // create cookieJar instance and pass it as argument
+    jar := httpkit.NewCookieJar()
+	options := []httpkit.HttpClientOption{
+		httpkit.WithTimeoutSeconds(30),
+		httpkit.WithClientProfile(profiles.Chrome_120),
+		httpkit.WithNotFollowRedirects(),
+		httpkit.WithCookieJar(jar), // create cookieJar instance and pass it as argument
 	}
 
-	client, err := tls_client.NewHttpClient(tls_client.NewNoopLogger(), options...)
+	client, err := httpkit.NewHttpClient(httpkit.NewNoopLogger(), options...)
 	if err != nil {
 		log.Println(err)
 		return
@@ -122,4 +122,3 @@ No Support in DMs!
 ### Appreciate my work?
 
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/CaptainBarnius)
-

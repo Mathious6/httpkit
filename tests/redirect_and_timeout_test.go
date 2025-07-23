@@ -2,13 +2,13 @@ package tests
 
 import (
 	"fmt"
-	"github.com/bogdanfinn/tls-client/profiles"
 	"testing"
 	"time"
 
+	"github.com/Mathious6/httpkit"
+	"github.com/Mathious6/httpkit/profiles"
 	http "github.com/bogdanfinn/fhttp"
 	"github.com/bogdanfinn/fhttp/httptest"
-	tls_client "github.com/bogdanfinn/tls-client"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -17,12 +17,12 @@ func TestClient_RedirectNoFollowWithSwitch(t *testing.T) {
 	testServer.Start()
 	defer testServer.Close()
 
-	options := []tls_client.HttpClientOption{
-		tls_client.WithClientProfile(profiles.Chrome_105),
-		tls_client.WithNotFollowRedirects(),
+	options := []httpkit.HttpClientOption{
+		httpkit.WithClientProfile(profiles.Chrome_105),
+		httpkit.WithNotFollowRedirects(),
 	}
 
-	client, err := tls_client.NewHttpClient(tls_client.NewNoopLogger(), options...)
+	client, err := httpkit.NewHttpClient(httpkit.NewNoopLogger(), options...)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -56,11 +56,11 @@ func TestClient_RedirectFollowWithSwitch(t *testing.T) {
 	testServer.Start()
 	defer testServer.Close()
 
-	options := []tls_client.HttpClientOption{
-		tls_client.WithClientProfile(profiles.Chrome_105),
+	options := []httpkit.HttpClientOption{
+		httpkit.WithClientProfile(profiles.Chrome_105),
 	}
 
-	client, err := tls_client.NewHttpClient(tls_client.NewNoopLogger(), options...)
+	client, err := httpkit.NewHttpClient(httpkit.NewNoopLogger(), options...)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -94,12 +94,12 @@ func TestClient_TestFailWithTimeout(t *testing.T) {
 	testServer.Start()
 	defer testServer.Close()
 
-	options := []tls_client.HttpClientOption{
-		tls_client.WithClientProfile(profiles.Chrome_105),
-		tls_client.WithTimeoutSeconds(3),
+	options := []httpkit.HttpClientOption{
+		httpkit.WithClientProfile(profiles.Chrome_105),
+		httpkit.WithTimeoutSeconds(3),
 	}
 
-	client, err := tls_client.NewHttpClient(tls_client.NewNoopLogger(), options...)
+	client, err := httpkit.NewHttpClient(httpkit.NewNoopLogger(), options...)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -5,19 +5,18 @@ import (
 	"io"
 	"testing"
 
-	"github.com/bogdanfinn/tls-client/profiles"
-
+	"github.com/Mathious6/httpkit"
+	"github.com/Mathious6/httpkit/profiles"
 	http "github.com/bogdanfinn/fhttp"
-	tls_client "github.com/bogdanfinn/tls-client"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestClient_HeaderOrder(t *testing.T) {
-	options := []tls_client.HttpClientOption{
-		tls_client.WithClientProfile(profiles.Chrome_105),
+	options := []httpkit.HttpClientOption{
+		httpkit.WithClientProfile(profiles.Chrome_105),
 	}
 
-	client, err := tls_client.NewHttpClient(nil, options...)
+	client, err := httpkit.NewHttpClient(nil, options...)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -100,12 +99,12 @@ func TestClient_HeaderOrder(t *testing.T) {
 }
 
 func TestClient_HeaderOrderHttp1(t *testing.T) {
-	options := []tls_client.HttpClientOption{
-		tls_client.WithClientProfile(profiles.Chrome_105),
-		tls_client.WithForceHttp1(),
+	options := []httpkit.HttpClientOption{
+		httpkit.WithClientProfile(profiles.Chrome_105),
+		httpkit.WithForceHttp1(),
 	}
 
-	client, err := tls_client.NewHttpClient(nil, options...)
+	client, err := httpkit.NewHttpClient(nil, options...)
 	if err != nil {
 		t.Fatal(err)
 	}

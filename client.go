@@ -1,4 +1,4 @@
-package tls_client
+package httpkit
 
 import (
 	"bytes"
@@ -10,10 +10,11 @@ import (
 	"sync"
 	"time"
 
+	"github.com/Mathious6/httpkit/bandwidth"
+	"github.com/Mathious6/httpkit/profiles"
+	"github.com/Mathious6/platekit"
 	http "github.com/bogdanfinn/fhttp"
 	"github.com/bogdanfinn/fhttp/httputil"
-	"github.com/bogdanfinn/tls-client/bandwidth"
-	"github.com/bogdanfinn/tls-client/profiles"
 	"golang.org/x/net/proxy"
 )
 
@@ -22,16 +23,23 @@ var defaultRedirectFunc = func(req *http.Request, via []*http.Request) error {
 }
 
 type HttpClient interface {
+	GetFlowId() string
+
 	GetCookies(u *url.URL) []*http.Cookie
 	SetCookies(u *url.URL, cookies []*http.Cookie)
 	SetCookieJar(jar http.CookieJar)
 	GetCookieJar() http.CookieJar
+
 	SetProxy(proxyUrl string) error
 	GetProxy() string
+
 	SetFollowRedirect(followRedirect bool)
 	GetFollowRedirect() bool
 	CloseIdleConnections()
+
 	Do(req *http.Request) (*http.Response, error)
+	DoWithProxy(req *http.Request, proxyUrl string) (*http.Response, error)
+
 	Get(url string) (resp *http.Response, err error)
 	Head(url string) (resp *http.Response, err error)
 	Post(url, contentType string, body io.Reader) (resp *http.Response, err error)
@@ -50,6 +58,7 @@ type httpClient struct {
 
 	http.Client
 	headerLck sync.Mutex
+	proxyLck  sync.Mutex
 }
 
 var DefaultTimeoutSeconds = 30
@@ -94,16 +103,18 @@ func NewHttpClient(logger Logger, options ...HttpClientOption) (HttpClient, erro
 
 	config.clientProfile = clientProfile
 
-	if config.debug {
-		if logger == nil {
-			logger = NewLogger()
+	if logger == nil {
+		if config.debug {
+			logger = NewDebugLogger(NewLogger())
+		} else {
+			logger = NewNoopLogger()
 		}
-
+	} else if config.debug {
 		logger = NewDebugLogger(logger)
 	}
 
-	if logger == nil {
-		logger = NewNoopLogger()
+	if config.flowId == "" {
+		config.flowId = platekit.Generate()
 	}
 
 	return &httpClient{
@@ -274,6 +285,11 @@ func (c *httpClient) applyProxy() error {
 	return nil
 }
 
+// GetFlowId returns the flow id of the client
+func (c *httpClient) GetFlowId() string {
+	return c.config.flowId
+}
+
 // GetCookies returns the cookies in the client's cookie jar for a given URL.
 func (c *httpClient) GetCookies(u *url.URL) []*http.Cookie {
 	c.logger.Debug(fmt.Sprintf("get cookies for url: %s", u.String()))
@@ -402,6 +418,19 @@ func (c *httpClient) Do(req *http.Request) (*http.Response, error) {
 	}
 
 	return resp, nil
+}
+
+func (c *httpClient) DoWithProxy(req *http.Request, proxyUrl string) (*http.Response, error) {
+	c.proxyLck.Lock()
+	defer c.proxyLck.Unlock()
+
+	currentProxy := c.GetProxy()
+	if err := c.SetProxy(proxyUrl); err != nil {
+		return nil, err
+	}
+	resp, doErr := c.Do(req)
+	_ = c.SetProxy(currentProxy)
+	return resp, doErr
 }
 
 func (c *httpClient) Get(url string) (resp *http.Response, err error) {

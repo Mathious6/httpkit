@@ -11,11 +11,11 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/bogdanfinn/tls-client/profiles"
+	"github.com/Mathious6/httpkit/profiles"
 
+	"github.com/Mathious6/httpkit"
 	http "github.com/bogdanfinn/fhttp"
 	"github.com/bogdanfinn/fhttp/http2"
-	tls_client "github.com/bogdanfinn/tls-client"
 	tls "github.com/bogdanfinn/utls"
 )
 
@@ -151,7 +151,7 @@ type TlsApiResponse struct {
 }
 
 func sslPinning() {
-	jar := tls_client.NewCookieJar()
+	jar := httpkit.NewCookieJar()
 
 	//	I generated the pins by running the following command:
 	//	➜ hpkp-pins -server=bstn.com:443
@@ -164,16 +164,16 @@ func sslPinning() {
 		},
 	}
 
-	options := []tls_client.HttpClientOption{
-		tls_client.WithTimeoutSeconds(60),
-		tls_client.WithClientProfile(profiles.Chrome_107),
-		tls_client.WithRandomTLSExtensionOrder(),
-		tls_client.WithCookieJar(jar),
-		tls_client.WithCertificatePinning(pins, tls_client.DefaultBadPinHandler),
-		tls_client.WithCharlesProxy("127.0.0.1", "8888"),
+	options := []httpkit.HttpClientOption{
+		httpkit.WithTimeoutSeconds(60),
+		httpkit.WithClientProfile(profiles.Chrome_107),
+		httpkit.WithRandomTLSExtensionOrder(),
+		httpkit.WithCookieJar(jar),
+		httpkit.WithCertificatePinning(pins, httpkit.DefaultBadPinHandler),
+		httpkit.WithCharlesProxy("127.0.0.1", "8888"),
 	}
 
-	client, err := tls_client.NewHttpClient(tls_client.NewNoopLogger(), options...)
+	client, err := httpkit.NewHttpClient(httpkit.NewNoopLogger(), options...)
 	if err != nil {
 		log.Println(err)
 		return
@@ -224,19 +224,19 @@ func sslPinning() {
 }
 
 func requestToppsAsChrome107Client() {
-	jar := tls_client.NewCookieJar()
+	jar := httpkit.NewCookieJar()
 
-	options := []tls_client.HttpClientOption{
-		tls_client.WithTimeoutSeconds(30),
-		tls_client.WithClientProfile(profiles.Chrome_107),
-		tls_client.WithDebug(),
-		// tls_client.WithProxyUrl("http://user:pass@host:port"),
-		// tls_client.WithNotFollowRedirects(),
-		// tls_client.WithInsecureSkipVerify(),
-		tls_client.WithCookieJar(jar), // create cookieJar instance and pass it as argument
+	options := []httpkit.HttpClientOption{
+		httpkit.WithTimeoutSeconds(30),
+		httpkit.WithClientProfile(profiles.Chrome_107),
+		httpkit.WithDebug(),
+		// httpkit.WithProxyUrl("http://user:pass@host:port"),
+		// httpkit.WithNotFollowRedirects(),
+		// httpkit.WithInsecureSkipVerify(),
+		httpkit.WithCookieJar(jar), // create cookieJar instance and pass it as argument
 	}
 
-	client, err := tls_client.NewHttpClient(tls_client.NewNoopLogger(), options...)
+	client, err := httpkit.NewHttpClient(httpkit.NewNoopLogger(), options...)
 	if err != nil {
 		log.Println(err)
 		return
@@ -302,12 +302,12 @@ func requestToppsAsChrome107Client() {
 }
 
 func postAsTlsClient() {
-	options := []tls_client.HttpClientOption{
-		tls_client.WithTimeoutSeconds(30),
-		tls_client.WithClientProfile(profiles.Chrome_107),
+	options := []httpkit.HttpClientOption{
+		httpkit.WithTimeoutSeconds(30),
+		httpkit.WithClientProfile(profiles.Chrome_107),
 	}
 
-	client, err := tls_client.NewHttpClient(tls_client.NewNoopLogger(), options...)
+	client, err := httpkit.NewHttpClient(httpkit.NewNoopLogger(), options...)
 	if err != nil {
 		log.Println(err)
 		return
@@ -350,13 +350,13 @@ func postAsTlsClient() {
 }
 
 func requestWithFollowRedirectSwitch() {
-	options := []tls_client.HttpClientOption{
-		tls_client.WithTimeoutSeconds(30),
-		tls_client.WithClientProfile(profiles.Chrome_107),
-		tls_client.WithNotFollowRedirects(),
+	options := []httpkit.HttpClientOption{
+		httpkit.WithTimeoutSeconds(30),
+		httpkit.WithClientProfile(profiles.Chrome_107),
+		httpkit.WithNotFollowRedirects(),
 	}
 
-	client, err := tls_client.NewHttpClient(tls_client.NewNoopLogger(), options...)
+	client, err := httpkit.NewHttpClient(httpkit.NewNoopLogger(), options...)
 	if err != nil {
 		log.Println(err)
 		return
@@ -426,13 +426,13 @@ func requestWithFollowRedirectSwitch() {
 }
 
 func downloadImageWithTlsClient() {
-	options := []tls_client.HttpClientOption{
-		tls_client.WithTimeoutSeconds(30),
-		tls_client.WithClientProfile(profiles.Chrome_107),
-		tls_client.WithNotFollowRedirects(),
+	options := []httpkit.HttpClientOption{
+		httpkit.WithTimeoutSeconds(30),
+		httpkit.WithClientProfile(profiles.Chrome_107),
+		httpkit.WithNotFollowRedirects(),
 	}
 
-	client, err := tls_client.NewHttpClient(tls_client.NewNoopLogger(), options...)
+	client, err := httpkit.NewHttpClient(httpkit.NewNoopLogger(), options...)
 	if err != nil {
 		log.Println(err)
 		return
@@ -483,13 +483,13 @@ func downloadImageWithTlsClient() {
 }
 
 func rotateProxiesOnClient() {
-	options := []tls_client.HttpClientOption{
-		tls_client.WithTimeoutSeconds(30),
-		tls_client.WithClientProfile(profiles.Chrome_107),
-		tls_client.WithProxyUrl("http://user:pass@host:port"), // you can also use socks5://user:pass@host:port or socks5h://user:pass@host:port
+	options := []httpkit.HttpClientOption{
+		httpkit.WithTimeoutSeconds(30),
+		httpkit.WithClientProfile(profiles.Chrome_107),
+		httpkit.WithProxyUrl("http://user:pass@host:port"), // you can also use socks5://user:pass@host:port or socks5h://user:pass@host:port
 	}
 
-	client, err := tls_client.NewHttpClient(tls_client.NewNoopLogger(), options...)
+	client, err := httpkit.NewHttpClient(httpkit.NewNoopLogger(), options...)
 	if err != nil {
 		log.Println(err)
 		return
@@ -693,12 +693,12 @@ func requestWithCustomClient() {
 		SpecFactory: specFactory,
 	}, settings, settingsOrder, pseudoHeaderOrder, connectionFlow, nil, nil)
 
-	options := []tls_client.HttpClientOption{
-		tls_client.WithTimeoutSeconds(60),
-		tls_client.WithClientProfile(customClientProfile), // use custom profile here
+	options := []httpkit.HttpClientOption{
+		httpkit.WithTimeoutSeconds(60),
+		httpkit.WithClientProfile(customClientProfile), // use custom profile here
 	}
 
-	client, err := tls_client.NewHttpClient(tls_client.NewNoopLogger(), options...)
+	client, err := httpkit.NewHttpClient(httpkit.NewNoopLogger(), options...)
 	if err != nil {
 		log.Println(err)
 		return
@@ -794,7 +794,7 @@ func requestWithJa3CustomClientWithTwoGreaseExtensions() {
 	keyShareCurves := []string{"GREASE", "X25519Kyber768", "X25519"}
 	supportedProtocolsALPN := []string{"h2", "http/1.1"}
 	supportedProtocolsALPS := []string{"h2"}
-	echCandidateCipherSuites := []tls_client.CandidateCipherSuites{
+	echCandidateCipherSuites := []httpkit.CandidateCipherSuites{
 		{
 			KdfId:  "HKDF_SHA256",
 			AeadId: "AEAD_AES_128_GCM",
@@ -807,7 +807,7 @@ func requestWithJa3CustomClientWithTwoGreaseExtensions() {
 	candidatePayloads := []uint16{128, 160, 192, 224}
 	certCompressionAlgos := []string{"brotli"}
 
-	specFactory, err := tls_client.GetSpecFactoryFromJa3String(ja3String, supportedSignatureAlgorithms, supportedDelegatedCredentialsAlgorithms, supportedVersions, keyShareCurves, supportedProtocolsALPN, supportedProtocolsALPS, echCandidateCipherSuites, candidatePayloads, certCompressionAlgos, 0)
+	specFactory, err := httpkit.GetSpecFactoryFromJa3String(ja3String, supportedSignatureAlgorithms, supportedDelegatedCredentialsAlgorithms, supportedVersions, keyShareCurves, supportedProtocolsALPN, supportedProtocolsALPS, echCandidateCipherSuites, candidatePayloads, certCompressionAlgos, 0)
 
 	customClientProfile := profiles.NewClientProfile(tls.ClientHelloID{
 		Client:      "MyCustomProfile",
@@ -816,12 +816,12 @@ func requestWithJa3CustomClientWithTwoGreaseExtensions() {
 		SpecFactory: specFactory,
 	}, settings, settingsOrder, pseudoHeaderOrder, connectionFlow, nil, nil)
 
-	options := []tls_client.HttpClientOption{
-		tls_client.WithTimeoutSeconds(60),
-		tls_client.WithClientProfile(customClientProfile), // use custom profile here
+	options := []httpkit.HttpClientOption{
+		httpkit.WithTimeoutSeconds(60),
+		httpkit.WithClientProfile(customClientProfile), // use custom profile here
 	}
 
-	client, err := tls_client.NewHttpClient(tls_client.NewNoopLogger(), options...)
+	client, err := httpkit.NewHttpClient(httpkit.NewNoopLogger(), options...)
 	if err != nil {
 		log.Println(err)
 		return
@@ -959,12 +959,12 @@ func testPskExtension() {
 		SpecFactory: specFactory,
 	}, settings, settingsOrder, pseudoHeaderOrder, connectionFlow, nil, nil)
 
-	options := []tls_client.HttpClientOption{
-		tls_client.WithTimeoutSeconds(60),
-		tls_client.WithClientProfile(customClientProfile),
+	options := []httpkit.HttpClientOption{
+		httpkit.WithTimeoutSeconds(60),
+		httpkit.WithClientProfile(customClientProfile),
 	}
 
-	client, err := tls_client.NewHttpClient(tls_client.NewNoopLogger(), options...)
+	client, err := httpkit.NewHttpClient(httpkit.NewNoopLogger(), options...)
 	if err != nil {
 		log.Println(err)
 		return
@@ -1055,12 +1055,12 @@ func testPskExtension() {
 }
 
 func testALPSExtension() {
-	options := []tls_client.HttpClientOption{
-		tls_client.WithTimeoutSeconds(60),
-		tls_client.WithClientProfile(profiles.Chrome_133),
+	options := []httpkit.HttpClientOption{
+		httpkit.WithTimeoutSeconds(60),
+		httpkit.WithClientProfile(profiles.Chrome_133),
 	}
 
-	client, err := tls_client.NewHttpClient(tls_client.NewNoopLogger(), options...)
+	client, err := httpkit.NewHttpClient(httpkit.NewNoopLogger(), options...)
 	if err != nil {
 		log.Println(err)
 		return

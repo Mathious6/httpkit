@@ -6,10 +6,10 @@ import (
 	"slices"
 	"testing"
 
+	"github.com/Mathious6/httpkit"
+	"github.com/Mathious6/httpkit/profiles"
 	http "github.com/bogdanfinn/fhttp"
 	"github.com/bogdanfinn/fhttp/httptest"
-	tls_client "github.com/bogdanfinn/tls-client"
-	"github.com/bogdanfinn/tls-client/profiles"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -18,7 +18,7 @@ func TestClient_UseSameConnection(t *testing.T) {
 	testServer.Start()
 	defer testServer.Close()
 
-	client, err := tls_client.ProvideDefaultClient(tls_client.NewNoopLogger())
+	client, err := httpkit.ProvideDefaultClient(httpkit.NewNoopLogger())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -56,14 +56,14 @@ func TestClient_UseDifferentConnection(t *testing.T) {
 	testServer.Start()
 	defer testServer.Close()
 
-	options := []tls_client.HttpClientOption{
-		tls_client.WithClientProfile(profiles.Chrome_107),
-		tls_client.WithTransportOptions(&tls_client.TransportOptions{
+	options := []httpkit.HttpClientOption{
+		httpkit.WithClientProfile(profiles.Chrome_107),
+		httpkit.WithTransportOptions(&httpkit.TransportOptions{
 			DisableKeepAlives: true,
 		}),
 	}
 
-	client, err := tls_client.NewHttpClient(nil, options...)
+	client, err := httpkit.NewHttpClient(nil, options...)
 	if err != nil {
 		t.Fatal(err)
 	}

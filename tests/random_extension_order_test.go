@@ -3,23 +3,23 @@ package tests
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/bogdanfinn/tls-client/profiles"
 	"io"
 	"strings"
 	"testing"
 
+	"github.com/Mathious6/httpkit"
+	"github.com/Mathious6/httpkit/profiles"
 	http "github.com/bogdanfinn/fhttp"
-	tls_client "github.com/bogdanfinn/tls-client"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestClient_RandomExtensionOrderChrome(t *testing.T) {
-	options := []tls_client.HttpClientOption{
-		tls_client.WithClientProfile(profiles.Chrome_107),
-		tls_client.WithRandomTLSExtensionOrder(),
+	options := []httpkit.HttpClientOption{
+		httpkit.WithClientProfile(profiles.Chrome_107),
+		httpkit.WithRandomTLSExtensionOrder(),
 	}
 
-	client, err := tls_client.NewHttpClient(nil, options...)
+	client, err := httpkit.NewHttpClient(nil, options...)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -64,12 +64,12 @@ func TestClient_RandomExtensionOrderChrome(t *testing.T) {
 }
 
 func TestClient_RandomExtensionOrderCustom(t *testing.T) {
-	options := []tls_client.HttpClientOption{
-		tls_client.WithClientProfile(profiles.CloudflareCustom),
-		tls_client.WithRandomTLSExtensionOrder(),
+	options := []httpkit.HttpClientOption{
+		httpkit.WithClientProfile(profiles.CloudflareCustom),
+		httpkit.WithRandomTLSExtensionOrder(),
 	}
 
-	client, err := tls_client.NewHttpClient(nil, options...)
+	client, err := httpkit.NewHttpClient(nil, options...)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -1,4 +1,4 @@
-package tls_client
+package httpkit
 
 import (
 	"context"
@@ -10,10 +10,10 @@ import (
 	"time"
 
 	"github.com/Dharmey747/quic-go-utls/http3"
+	"github.com/Mathious6/httpkit/bandwidth"
+	"github.com/Mathious6/httpkit/profiles"
 	http "github.com/bogdanfinn/fhttp"
 	"github.com/bogdanfinn/fhttp/http2"
-	"github.com/bogdanfinn/tls-client/bandwidth"
-	"github.com/bogdanfinn/tls-client/profiles"
 	tls "github.com/bogdanfinn/utls"
 	"golang.org/x/net/proxy"
 )
